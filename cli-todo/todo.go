@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 type Task struct {
@@ -29,7 +31,7 @@ func createTask(tasks []Task) []Task {
 
 	// Append the new task to the list and confirm creation
 	tasks = append(tasks, Task{Description: taskDescription, Completed: false})
-	fmt.Println("Task created successfully!")
+	color.Green("Task created successfully!")
 	return tasks
 }
 
