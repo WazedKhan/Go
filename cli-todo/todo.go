@@ -4,11 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
+type Task struct {
+	Description string
+	Completed   bool
+}
+
 // createTask prompts the user for a task description and adds it to the task list.
-func createTask(tasks []string) []string {
+func createTask(tasks []Task) []Task {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Enter task description: ")
 	scanner.Scan()
@@ -22,13 +28,13 @@ func createTask(tasks []string) []string {
 	}
 
 	// Append the new task to the list and confirm creation
-	tasks = append(tasks, taskDescription)
+	tasks = append(tasks, Task{Description: taskDescription, Completed: false})
 	fmt.Println("Task created successfully!")
 	return tasks
 }
 
 // showTasks displays the list of tasks, formatted with task numbers.
-func showTasks(tasks []string) {
+func showTasks(tasks []Task) {
 	if len(tasks) == 0 {
 		fmt.Println("No tasks available!")
 		return
@@ -37,21 +43,48 @@ func showTasks(tasks []string) {
 	// Print all tasks with their index
 	fmt.Println("Your tasks:")
 	for idx, task := range tasks {
-		fmt.Printf("[%d]: %s\n", idx+1, task)
+		status := "[ ]"
+		if task.Completed {
+			status = "[X]"
+		}
+		fmt.Printf("[%d]: %s %s\n", idx+1, status, task.Description)
 	}
+}
+
+func markTask(tasks []Task) []Task {
+	if len(tasks) == 0 {
+		fmt.Println("No tasks to mark as complete.")
+		return tasks
+	}
+
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Enter the task number to mark as complete: ")
+	scanner.Scan()
+	input := strings.TrimSpace(scanner.Text())
+
+	// Convert input to integer
+	taskNumber, err := strconv.Atoi(input)
+	if err != nil || taskNumber < 1 || taskNumber > len(tasks) {
+		fmt.Println("Invalid task number!")
+		return tasks
+	}
+	// mark the task
+	tasks[taskNumber-1].Completed = true
+	fmt.Printf("Task [%d] marked as complete\n", taskNumber)
+	return tasks
 }
 
 // main is the entry point where the CLI interacts with the user.
 func main() {
 	// Initialize an empty slice for tasks
-	var tasks []string
+	var tasks []Task
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Println("Welcome to the CLI To-Do List!")
 
 	// Main loop for accepting commands
 	for {
-		fmt.Print("Enter a command (add, list, exit): ")
+		fmt.Print("Enter a command (add, list, mark, exit): ")
 		scanner.Scan()
 		command := strings.ToLower(strings.TrimSpace(scanner.Text()))
 
@@ -60,12 +93,14 @@ func main() {
 			tasks = createTask(tasks)
 		case "list":
 			showTasks(tasks)
+		case "mark":
+			markTask(tasks)
 		case "exit":
 			// Exit the loop and program
 			fmt.Println("Exiting the application.")
 			return
 		default:
-			fmt.Println("Invalid command. Please use 'add', 'list', or 'exit'.")
+			fmt.Println("Invalid command. Please use 'add', 'list', 'mark' or 'exit'.")
 		}
 	}
 }
