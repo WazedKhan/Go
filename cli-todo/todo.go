@@ -7,8 +7,13 @@ import (
 	"strings"
 )
 
+type Task struct {
+	Description string
+	Completed   bool
+}
+
 // createTask prompts the user for a task description and adds it to the task list.
-func createTask(tasks []string) []string {
+func createTask(tasks []Task) []Task {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Enter task description: ")
 	scanner.Scan()
@@ -22,13 +27,13 @@ func createTask(tasks []string) []string {
 	}
 
 	// Append the new task to the list and confirm creation
-	tasks = append(tasks, taskDescription)
+	tasks = append(tasks, Task{Description: taskDescription, Completed: false})
 	fmt.Println("Task created successfully!")
 	return tasks
 }
 
 // showTasks displays the list of tasks, formatted with task numbers.
-func showTasks(tasks []string) {
+func showTasks(tasks []Task) {
 	if len(tasks) == 0 {
 		fmt.Println("No tasks available!")
 		return
@@ -37,14 +42,18 @@ func showTasks(tasks []string) {
 	// Print all tasks with their index
 	fmt.Println("Your tasks:")
 	for idx, task := range tasks {
-		fmt.Printf("[%d]: %s\n", idx+1, task)
+		status := "[ ]"
+		if task.Completed {
+			status = "[X]"
+		}
+		fmt.Printf("[%d]: %s %s\n", idx+1, status, task.Description)
 	}
 }
 
 // main is the entry point where the CLI interacts with the user.
 func main() {
 	// Initialize an empty slice for tasks
-	var tasks []string
+	var tasks []Task
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Println("Welcome to the CLI To-Do List!")
