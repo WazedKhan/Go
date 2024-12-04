@@ -52,6 +52,19 @@ func showTasks(tasks []Task) {
 	}
 }
 
+func removeLastTask(tasks []Task) []Task {
+	if len(tasks) == 0 {
+		fmt.Println("No tasks to remove.")
+		return tasks
+	}
+
+	lastTask := tasks[len(tasks)-1]
+	tasks = tasks[:len(tasks)-1]
+	fmt.Printf("Removed last task: %s\n", lastTask.Description)
+
+	return tasks
+}
+
 func markTask(tasks []Task) []Task {
 	if len(tasks) == 0 {
 		fmt.Println("No tasks to mark as complete.")
@@ -98,6 +111,9 @@ func main() {
 
 		case "mark":
 			markTask(tasks)
+
+		case "remove":
+			tasks = removeLastTask(tasks)
 
 		case "exit":
 			// Exit the loop and program
